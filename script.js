@@ -31,12 +31,15 @@ let questions=[],wrongQuestions=[],reviewData=[];
 let currentIndex=0,score=0,timeLeft=15,timer;
 let sectionStats={};
 
+// r=38, circumference = 2*PI*38 = 238.76
+const CIRCUMFERENCE = 238.76;
+
 pdfjsLib.GlobalWorkerOptions.workerSrc=
 "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
 
 pdfUpload.addEventListener("change",async function(){
 const file=this.files[0];if(!file)return;
-uploadStatus.innerText="Processing...";
+uploadStatus.innerText="⏳ Processing...";
 const reader=new FileReader();
 reader.onload=async function(){
 const pdf=await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
@@ -47,7 +50,7 @@ const content=await page.getTextContent();
 text+=content.items.map(it=>it.str).join(" ")+" ";
 }
 generateQuestions(text);
-uploadStatus.innerText="Ready ✅";
+uploadStatus.innerText="✅ Ready — choose your mode below!";
 modeSwitch.classList.remove("hidden");
 };
 reader.readAsArrayBuffer(file);
@@ -87,11 +90,11 @@ function showQuestion(){
 if(currentIndex>=questions.length)return showResults();
 const q=questions[currentIndex];
 questionText.innerText=q.question;
-questionNumber.innerText=`Question ${currentIndex+1}/${questions.length}`;
+questionNumber.innerText=`Question ${currentIndex+1} of ${questions.length}`;
 optionsContainer.innerHTML="";
 q.options.forEach((opt,i)=>{
 const btn=document.createElement("button");
-btn.innerText=`${i+1}. ${opt}`;
+btn.innerText=`${i+1}.  ${opt}`;
 btn.classList.add("option-btn");
 btn.onclick=()=>checkAnswer(opt);
 optionsContainer.appendChild(btn);
@@ -110,7 +113,7 @@ updateCircle();
 if(timeLeft<=0){
 clearInterval(timer);
 wrongQuestions.push(questions[currentIndex]);
-reviewData.push({q:questions[currentIndex],selected:"Time Up"});
+reviewData.push({q:questions[currentIndex],selected:"⏰ Time Up"});
 currentIndex++;showQuestion();
 }
 },1000);
@@ -119,8 +122,12 @@ currentIndex++;showQuestion();
 function updateCircle(){
 timerText.innerText=timeLeft;
 const circle=document.querySelector(".progress-ring-circle");
-const offset=314-(314*(timeLeft/15));
+const offset=CIRCUMFERENCE-(CIRCUMFERENCE*(timeLeft/15));
 circle.style.strokeDashoffset=offset;
+// Color feedback
+if(timeLeft<=5) circle.style.stroke="#f87171";
+else if(timeLeft<=10) circle.style.stroke="#fbbf24";
+else circle.style.stroke="#a78bfa";
 }
 
 function updateProgress(){
@@ -156,7 +163,7 @@ currentIndex++;flashcard.classList.remove("flip");showFlashcard();
 function showResults(){
 quizCard.classList.add("hidden");
 resultCard.classList.remove("hidden");
-finalScore.innerText=`Score: ${score}/${questions.length}`;
+finalScore.innerText=`Score: ${score} / ${questions.length}`;
 generateHeatmap();
 generateReview();
 }
@@ -168,10 +175,10 @@ const {correct,total}=sectionStats[sec];
 const percent=Math.round((correct/total)*100);
 const box=document.createElement("div");
 box.classList.add("heat-box");
-box.innerText=`${sec} ${percent}%`;
-if(percent>=80)box.style.background="green";
-else if(percent>=50)box.style.background="orange";
-else box.style.background="red";
+box.innerText=`${sec}  ${percent}%`;
+if(percent>=80)box.style.background="rgba(34,197,94,0.4)";
+else if(percent>=50)box.style.background="rgba(251,146,60,0.4)";
+else box.style.background="rgba(248,113,113,0.4)";
 heatmapContainer.appendChild(box);
 }
 }
@@ -181,9 +188,10 @@ reviewSection.innerHTML="<h3>Detailed Review</h3>";
 reviewData.forEach((item,i)=>{
 const div=document.createElement("div");
 div.style.margin="10px";
-div.innerHTML=`Q${i+1}: ${item.q.question}<br>
-Your Answer: ${item.selected}<br>
-Correct: ${item.q.answer}<hr>`;
+const correct=item.selected===item.q.answer;
+div.innerHTML=`<strong style="color:${correct?'#4ade80':'#f87171'}">Q${i+1}:</strong> ${item.q.question}<br>
+<span style="color:#9990b8">Your Answer:</span> ${item.selected}<br>
+<span style="color:#9990b8">Correct:</span> ${item.q.answer}<hr style="border-color:rgba(255,255,255,0.06);margin-top:8px">`;
 reviewSection.appendChild(div);
 });
 }
