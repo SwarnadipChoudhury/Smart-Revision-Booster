@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Smart Revision Booster</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+</head>
+<body>
+
+<div class="container fade">
+
+<h1>🚀 Smart Revision Booster</h1>
+
+<div class="upload-section">
+<label class="upload-btn">
+📄 Upload PDF
+<input type="file" id="pdfUpload" hidden>
+</label>
+<p id="uploadStatus"></p>
+</div>
+
+<div id="modeSwitch" class="hidden">
+<button id="quizModeBtn">Start Quiz</button>
+<button id="flashModeBtn">Flashcards</button>
+</div>
+
+<div id="quizCard" class="hidden fade">
+
+<div class="timer-wrapper">
+<svg class="progress-ring" width="120" height="120">
+<circle class="progress-ring-bg" cx="60" cy="60" r="50"/>
+<circle class="progress-ring-circle" cx="60" cy="60" r="50"/>
+</svg>
+<div id="timerText">15</div>
+</div>
+
+<div id="questionNumber"></div>
+<h2 id="questionText"></h2>
+<div id="optionsContainer"></div>
+<button id="nextBtn">Next</button>
+<div class="progress-bar">
+<div id="progressFill"></div>
+</div>
+<div id="scoreDisplay"></div>
+
+</div>
+
+<div id="flashSection" class="hidden fade">
+<div class="flashcard" id="flashcard">
+<div class="flash-front" id="flashFront"></div>
+<div class="flash-back" id="flashBack"></div>
+</div>
+<button id="nextFlash">Next</button>
+</div>
+
+<div id="resultCard" class="hidden fade">
+<h2>Performance Summary</h2>
+<div id="finalScore"></div>
+<div id="heatmapContainer"></div>
+<div id="reviewSection"></div>
+<button id="retryWrong">Retry Wrong Questions</button>
+<button id="restartAll">Restart Quiz</button>
+</div>
+
+</div>
+
+<audio id="correctSound" src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"></audio>
+<audio id="wrongSound" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio>
+
+<script src="script.js"></script>
+</body>
+</html>
